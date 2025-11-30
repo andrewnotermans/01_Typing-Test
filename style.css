@@ -52,10 +52,13 @@ button:hover {
     filter: brightness(1.2);
 }
 
+span {
+    min-width: 14px;
+}
 .correct {
     color:green;
 }
 
-.incorrect {
+.error {
     color: red;
 }
