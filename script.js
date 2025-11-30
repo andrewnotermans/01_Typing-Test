@@ -35,11 +35,10 @@ let totalTyped = '';
 let currentCharIndex = 0;
 let errors = 0;
 let longText = generateLongText();
-let timeLeft = 6;
+let timeLeft = 60;
 let timerInterval;
 let typingStarted = false;
 
-textContainer.textContent = longText;
 // Shuffle the words array
 function shuffleArray(array) {
     for (let i = array.length -1; i > 0; i--)  {
@@ -83,7 +82,7 @@ function endTest() {
 // Calculate words-per-minute with error adjustement
 function calculateWPM() {
     const wordsTyped = totalTyped.trim().split(/\s+/).length;
-    const baseWPM = Math.round((wordsTyped / 6) * 60);
+    const baseWPM = Math.round((wordsTyped / 60) * 60);
     const adjustedWPM = Math.max(baseWPM - errors, 0);
     return adjustedWPM;
 }
@@ -129,3 +128,48 @@ document.addEventListener('keydown', (e) => {
         textContainer.scrollLeft = scrollAmount;
     }    
 });
+
+// Reset the test
+function resetTest() {
+    clearInterval(timerInterval);
+    timeLeft = 60;
+    timerElement.textContent = `Time left: ${timeLeft}s`;
+    finalScoreElement.textContent = '';
+    textContainer.style.display = 'block';
+    tryAgainButton.style.display = 'none';
+    totalTyped = '';
+    typingStarted = false;
+    currentCharIndex = 0;
+    errors = 0;
+    textContainer.scrollLeft = 0;
+    longText = generateLongText();
+    init();
+
+}
+
+// /initialise the test
+function init() {
+    if(isMobileDevice()) {
+        showMobileMessage();
+    } else {
+        textContainer.innerText = longText;
+    timerElement.textContent = `Time left: ${timeLeft}s`;
+    }
+    
+
+}
+
+// Tryagain button listener
+tryAgainButton.addEventListener('click', resetTest);
+
+// Detect if the device is mobile
+function isMobileDevice() {
+    return /Mobi|Android/i.test(navigator.userAgent) || window.innerWidth < 800;
+}
+
+// Show message for mobile users
+function showMobileMessage() {
+    textContainer.textContent = 'This typing test is designed for desktop device only'
+}
+// Startup
+init();
