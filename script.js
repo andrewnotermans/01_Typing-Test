@@ -35,6 +35,9 @@ let totalTyped = '';
 let currentCharIndex = 0;
 let errors = 0;
 let longText = generateLongText();
+let timeLeft = 6;
+let timerInterval;
+let typingStarted = false;
 
 textContainer.textContent = longText;
 // Shuffle the words array
@@ -53,8 +56,41 @@ function generateLongText() {
     return shuffledWords.join(' ');
 }
 
+// Start countdown timer
+function startTimer() {
+    if (!typingStarted) {
+        typingStarted = true;
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            timerElement.textContent = `Time left: ${timeLeft}s`;
+            if(timeLeft <= 0) {
+                clearInterval(timerInterval);
+                endTest();
+            }
+        }, 1000);
+    }
+}
+// End test and display the final score
+function endTest() {
+    timerElement.textContent = `Time's up`;
+    finalScoreElement.textContent = `Final WPM: ${calculateWPM()}`;
+    textContainer.style.display ='none';
+    tryAgainButton.style.display = 'block';
+    calculateWPM();
+
+}
+
+// Calculate words-per-minute with error adjustement
+function calculateWPM() {
+    const wordsTyped = totalTyped.trim().split(/\s+/).length;
+    const baseWPM = Math.round((wordsTyped / 6) * 60);
+    const adjustedWPM = Math.max(baseWPM - errors, 0);
+    return adjustedWPM;
+}
+
 // /Handle typing over the displayed text and scrolling
 document.addEventListener('keydown', (e) => {
+    startTimer();
     if (e.key === 'Backspace') {
         if (totalTyped.length > 0) {
             currentCharIndex = Math.max(currentCharIndex -1, 0);
